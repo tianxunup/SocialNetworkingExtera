@@ -10,11 +10,6 @@ description: Social Networking Extra
 authors:
   - TianxunUP
 
-permissions:
-  op:
-    description: Server Administrator
-    default: false
-
 commands:
   awarded:
     description: 授予玩家称号

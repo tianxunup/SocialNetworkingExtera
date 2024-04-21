@@ -85,11 +85,12 @@ public final class Main extends JavaPlugin {
             }
         }
         // 注册命令/事件
+        System.out.println("Registering events/commands.");
         PlayerTp playerTp = new PlayerTp();
         Objects.requireNonNull(getCommand("tpa")).setExecutor(playerTp);
         Objects.requireNonNull(getCommand("tpac")).setExecutor(playerTp);
         Objects.requireNonNull(getCommand("tpde")).setExecutor(playerTp);
-        Objects.requireNonNull(getCommand("tpel")).setExecutor(playerTp);
+        Objects.requireNonNull(getCommand("tpnel")).setExecutor(playerTp);
         getServer().getPluginManager().registerEvents(playerTp,this);
     }
 
