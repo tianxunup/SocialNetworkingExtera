@@ -92,8 +92,8 @@ public class PlayerTp implements CommandExecutor, Listener {
 }
 
 class CannelTeleportThread extends BukkitRunnable {
-	private Player teleporter;
-	private Player teleportee;
+	private final Player teleporter;
+	private final Player teleportee;
 	public CannelTeleportThread(Player teleporter, Player teleportee) {
 		this.teleporter = teleporter;
 		this.teleportee = teleportee;
@@ -108,8 +108,8 @@ class CannelTeleportThread extends BukkitRunnable {
 }
 
 class TeleportThread extends BukkitRunnable {
-	private Player teleporter;
-	private Player teleportee;
+	private final Player teleporter;
+	private final Player teleportee;
 	public TeleportThread(Player teleporter, Player teleportee) {
 		this.teleporter = teleporter;
 		this.teleportee = teleportee;
