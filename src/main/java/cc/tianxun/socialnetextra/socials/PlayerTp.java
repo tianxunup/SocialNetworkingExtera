@@ -7,12 +7,13 @@ import org.bukkit.event.*;
 
 import cc.tianxun.socialnetextra.Main;
 import org.bukkit.event.player.*;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
 
 public class PlayerTp implements CommandExecutor, Listener {
-	private static final int teleportWaitMillis = 5000;
-	private static final int autoCannelMillis = 5000;
+	private static final long teleportWaitTicks = 5*20;
+	private static final long autoCannelTicks = 3*60*20;
 	public static final Map<String, List<String>> tpRequestsQueue = new HashMap<>();
 	public static final Map<String,String> willTps = new HashMap<>();
 	@EventHandler
@@ -48,7 +49,7 @@ public class PlayerTp implements CommandExecutor, Listener {
 				if (teleportee.getName().equals(args[0])) {
 					tpRequestsQueue.get(teleportee.getName()).add(player.getName());
 //					willTps.replace(player.getName(),lltpedPlayer.getName());
-					new CannelTeleportThread(player,teleportee,autoCannelMillis).start();
+					new CannelTeleportThread(player,teleportee).runTaskLater(Main.getInstance(),autoCannelTicks);
 					return false;
 				}
 			}
@@ -60,7 +61,7 @@ public class PlayerTp implements CommandExecutor, Listener {
 			for (String teleporterName : tpRequestsQueue.get(player.getName())) {
 				Player teleporter = Bukkit.getServer().getPlayer(teleporterName);
 				if (teleporter != null) {
-					new TeleportThread(teleporter,player,teleportWaitMillis);
+					new TeleportThread(teleporter,player).runTaskLater(Main.getInstance(),teleportWaitTicks);
 					willTps.replace(teleporterName,player.getName());
 					teleporter.sendMessage(Main.getInstance().getLangKey("command.tpac.willtp", teleporter.getLocale()));
 					player.sendMessage(Main.getInstance().getLangKey("command.tpac.sufceeuly", player.getLocale()));
@@ -90,23 +91,15 @@ public class PlayerTp implements CommandExecutor, Listener {
 	}
 }
 
-class CannelTeleportThread extends Thread {
+class CannelTeleportThread extends BukkitRunnable {
 	private Player teleporter;
 	private Player teleportee;
-	private int waitMillis;
-	public CannelTeleportThread(Player teleporter, Player teleportee, int waitMillis) {
+	public CannelTeleportThread(Player teleporter, Player teleportee) {
 		this.teleporter = teleporter;
 		this.teleportee = teleportee;
-		this.waitMillis = waitMillis;
 	}
 	@Override
 	public void run() {
-		try {
-			Thread.sleep(this.waitMillis);
-		} catch (InterruptedException e) {
-			throw new RuntimeException(e);
-		}
-
 		if (PlayerTp.tpRequestsQueue.get(this.teleportee.getName()).remove(this.teleporter.getName())) {
 			this.teleporter.sendMessage(Main.getInstance().getLangKey("commond.tpa.canneled", this.teleporter.getLocale()));
 			this.teleportee.sendMessage(Main.getInstance().getLangKey("commond.tpa.canneled", this.teleportee.getLocale()));
@@ -114,22 +107,15 @@ class CannelTeleportThread extends Thread {
 	}
 }
 
-class TeleportThread extends Thread {
+class TeleportThread extends BukkitRunnable {
 	private Player teleporter;
 	private Player teleportee;
-	private int waitMillis;
-	public TeleportThread(Player teleporter, Player teleportee, int waitMillis) {
+	public TeleportThread(Player teleporter, Player teleportee) {
 		this.teleporter = teleporter;
 		this.teleportee = teleportee;
-		this.waitMillis = waitMillis;
 	}
 	@Override
 	public void run() {
-		try {
-			Thread.sleep(this.waitMillis);
-		} catch (InterruptedException e) {
-			throw new RuntimeException(e);
-		}
 		if (PlayerTp.willTps.get(this.teleporter.getName()).equals(this.teleportee.getName())) {
 			this.teleporter.teleport(this.teleportee);
 			this.teleporter.sendMessage(Main.getInstance().getLangKey("commond.tpa.teleported", this.teleporter.getLocale()));
