@@ -1,0 +1,46 @@
+name: SocialNetExtra
+version: '${project.version}'
+main: cc.tianxun.socialnetextra.Main
+api-version: '1.16'
+
+website: http://gittianxun163.github.io
+default-permission: true
+prefix: SocialNetExtra
+description: Social Networking Extra
+authors:
+  - TianxunUP
+
+permissions:
+  op:
+    description: Server Administrator
+    default: false
+
+commands:
+  awarded:
+    description: 授予玩家称号
+    permission: permission.adminstrator
+    usage: "/<command> <player> <prefix>"
+  setprefix:
+    description: 设置自己称号
+    permission: permission.default
+    usage: "/<command> <id>"
+  tpa:
+    description: 传送玩家
+    permission: permission.default
+    usage: "/<command> <player>"
+  tpac:
+    description: 同意传送请求
+    permission: permission.default
+    usage: "/<command> [player]"
+  tpde:
+    description: 拒绝传送请求
+    permission: permission.default
+    usage: "/<command> [player]"
+  tpnel:
+    description: 取消传送请求
+    permission: permission.default
+    usage: "/<command> [player]"
+  killself:
+    description: 自杀
+    permission: permission.default
+    usage: "/<command>"

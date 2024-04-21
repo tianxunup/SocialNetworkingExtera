@@ -1,0 +1,5 @@
+enable_tpa: true
+enable_killself: true
+
+max_prefixs_worn: 1
+allow_customize_prefix: true
