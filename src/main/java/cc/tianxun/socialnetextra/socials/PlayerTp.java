@@ -20,6 +20,7 @@ public class PlayerTp implements CommandExecutor, Listener {
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		tpRequestsQueue.put(event.getPlayer().getName(),new ArrayList<>());
 		willTps.put(event.getPlayer().getName(),null);
+		System.out.println("The locatle of the player is "+event.getPlayer().getLocale());
 	}
 	@EventHandler
 	public void onPlayerQuit(PlayerQuitEvent event) {
@@ -30,12 +31,12 @@ public class PlayerTp implements CommandExecutor, Listener {
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 		if (!(sender instanceof Player)) {
 			sender.sendMessage("§4Only players can use this command.");
-			return false;
+			return true;
 		}
 		Player player = (Player)sender;
 		if (!Main.getInstance().getConfig().getBoolean("enable_tpa")) {
 			player.sendMessage(Main.getInstance().getLangKey("command.tpa.disabled_message",player.getLocale()));
-			return false;
+			return true;
 		}
 
 		if (command.getName().equals("tpa")) {
@@ -43,14 +44,14 @@ public class PlayerTp implements CommandExecutor, Listener {
 				player.sendMessage(
 					String.format(Main.getInstance().getLangKey("command.generic.argserror"),"tpa",1,args.length)
 				);
-				return false;
+				return true;
 			}
 			for (Player teleportee : Bukkit.getServer().getOnlinePlayers()) {
 				if (teleportee.getName().equals(args[0])) {
 					tpRequestsQueue.get(teleportee.getName()).add(player.getName());
 //					willTps.replace(player.getName(),lltpedPlayer.getName());
 					new CannelTeleportThread(player,teleportee).runTaskLater(Main.getInstance(),autoCannelTicks);
-					return false;
+					return true;
 				}
 			}
 			player.sendMessage(
@@ -82,12 +83,12 @@ public class PlayerTp implements CommandExecutor, Listener {
 		}
 		else if (command.getName().equals("tpel")) {
 			for (Player teleportee : Bukkit.getServer().getOnlinePlayers()) {
-				tpRequestsQueue.get(teleportee.getName()).contains(player.getName());
+				tpRequestsQueue.get(teleportee.getName()).remove(player.getName());
 				teleportee.sendMessage(Main.getInstance().getLangKey("commond.tpa.canneled", teleportee.getLocale()));
 			}
 			player.sendMessage(Main.getInstance().getLangKey("command.tpel.sufceeuly", player.getLocale()));
 		}
-		return false;
+		return true;
 	}
 }
 
