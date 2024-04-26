@@ -88,14 +88,14 @@ public final class Main extends JavaPlugin {
         // 注册命令/事件
         System.out.println("Registering events/commands.");
         PlayerTp playerTp = new PlayerTp();
-        Kill kill = new Kill();
+        Killself killself = new Killself();
         Objects.requireNonNull(getCommand("tpa")).setExecutor(playerTp);
         Objects.requireNonNull(getCommand("tpac")).setExecutor(playerTp);
         Objects.requireNonNull(getCommand("tpde")).setExecutor(playerTp);
         Objects.requireNonNull(getCommand("tpnel")).setExecutor(playerTp);
-        Objects.requireNonNull(getCommand("kill")).setExecutor(kill);
+        Objects.requireNonNull(getCommand("kill")).setExecutor(killself);
         getServer().getPluginManager().registerEvents(playerTp,this);
-        getServer().getPluginManager().registerEvents(kill,this);
+        getServer().getPluginManager().registerEvents(killself,this);
     }
 
     @Override

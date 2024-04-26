@@ -6,7 +6,7 @@ import org.bukkit.entity.*;
 import org.bukkit.event.*;
 import org.bukkit.event.entity.PlayerDeathEvent;
 
-public class Kill implements CommandExecutor, Listener {
+public class Killself implements CommandExecutor, Listener {
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 		if (!(sender instanceof Player)) {
