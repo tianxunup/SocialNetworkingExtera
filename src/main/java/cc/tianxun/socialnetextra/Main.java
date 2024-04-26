@@ -93,7 +93,7 @@ public final class Main extends JavaPlugin {
         Objects.requireNonNull(getCommand("tpac")).setExecutor(playerTp);
         Objects.requireNonNull(getCommand("tpde")).setExecutor(playerTp);
         Objects.requireNonNull(getCommand("tpnel")).setExecutor(playerTp);
-        Objects.requireNonNull(getCommand("kill")).setExecutor(killself);
+        Objects.requireNonNull(getCommand("killself")).setExecutor(killself);
         getServer().getPluginManager().registerEvents(playerTp,this);
         getServer().getPluginManager().registerEvents(killself,this);
     }

@@ -3,7 +3,7 @@ version: '${project.version}'
 main: cc.tianxun.socialnetextra.Main
 api-version: '1.16'
 
-website: http://gittianxun163.github.io
+website: http://tianxunup.github.io
 default-permission: true
 prefix: SocialNetExtra
 description: Social Networking Extra
