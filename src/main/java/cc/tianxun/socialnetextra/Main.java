@@ -10,11 +10,11 @@ import java.util.*;
 public final class Main extends JavaPlugin {
     private static Main instance;
     public static List<String> languageList = new ArrayList<>();
-    public static final String defaultLanguage = "en_us";
+    public static final String defaultLanguage = "en_US";
     private final Map<String,String> langkeys = new HashMap<>();
     static {
-        languageList.add("en_us");
-//        languageList.add("zh_cn");
+        languageList.add("en_US");
+//        languageList.add("zh_CN");
 //        languageList.add("zh_hans");
     }
     public static Main getInstance() {
@@ -49,7 +49,7 @@ public final class Main extends JavaPlugin {
         // 读取语言文件
         System.out.println("Reading language files.");
         for (String lang : languageList) {
-            InputStream stream = this.getClass().getClassLoader().getResourceAsStream(String.format("language/%s.lang", lang));
+            InputStream stream = this.getClass().getClassLoader().getResourceAsStream(String.format("/language/%s.lang", lang));
 	        BufferedReader buf;
 	        if (stream != null) {
 		        buf = new BufferedReader(new InputStreamReader(stream));
@@ -73,6 +73,7 @@ public final class Main extends JavaPlugin {
                     continue;
                 }
                 String[] kv = content.split("=",2);
+                System.out.printf("k:%s v:%s%n",kv[0],kv[1]);
                 if (kv.length != 2) {
                     System.err.println("A language file with wrong in line "+whichline);
                 }

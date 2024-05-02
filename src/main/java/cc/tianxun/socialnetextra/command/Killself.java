@@ -7,6 +7,7 @@ import org.bukkit.event.*;
 import org.bukkit.event.entity.PlayerDeathEvent;
 
 public class Killself implements CommandExecutor, Listener {
+	public static double killDamage = 32768;
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 		if (!(sender instanceof Player)) {
@@ -19,12 +20,12 @@ public class Killself implements CommandExecutor, Listener {
 			return true;
 		}
 
-		player.damage(Double.POSITIVE_INFINITY);
+		player.damage(killDamage);
 		return true;
 	}
 	@EventHandler
 	public void onPlayerDeath(PlayerDeathEvent event) {
-		if (event.getEntity().getKiller() == null) {
+		if (event.getEntity().getLastDamage() == killDamage) {
 			event.setDeathMessage(event.getEntity().getName() + "自杀了");
 		}
 	}

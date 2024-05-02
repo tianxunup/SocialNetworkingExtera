@@ -4,3 +4,4 @@ command.setprefix.description=Set own prefix worn.
 command.setprefix.usage=/setprefix <id(maxinum is %d)>
 command.generic.argserror=§l§4Command "%s" should only receive %d args,but you typed %d.
 command.generic.playernotfound=§l§4Player "%s" was not found.
+command.killself.disabled_message=The command 'killself is disabled.
