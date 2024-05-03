@@ -16,7 +16,7 @@ public class Killself implements CommandExecutor, Listener {
 		}
 		Player player = (Player)sender;
 		if (!Main.getInstance().getConfig().getBoolean("enable_killself")) {
-			player.sendMessage(Main.getInstance().getLangKey("command.killself.disabled_message",player.getLocale()));
+			player.sendMessage("§4命令'kill'已被服务器禁用");
 			return true;
 		}
 

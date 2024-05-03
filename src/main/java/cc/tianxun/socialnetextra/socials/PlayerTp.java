@@ -12,7 +12,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.util.*;
 
 public class PlayerTp implements CommandExecutor, Listener {
-	private static final long teleportWaitTicks = 5*20;
+	private static final long teleportWaitTicks = 3*20;
 	private static final long autoCannelTicks = 3*60*20;
 	public static final Map<String, List<String>> tpRequestsQueue = new HashMap<>();
 	public static final Map<String,String> willTps = new HashMap<>();
@@ -20,7 +20,6 @@ public class PlayerTp implements CommandExecutor, Listener {
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		tpRequestsQueue.put(event.getPlayer().getName(),new ArrayList<>());
 		willTps.put(event.getPlayer().getName(),null);
-		System.out.println("The locatle of the player is "+event.getPlayer().getLocale());
 	}
 	@EventHandler
 	public void onPlayerQuit(PlayerQuitEvent event) {
@@ -35,14 +34,14 @@ public class PlayerTp implements CommandExecutor, Listener {
 		}
 		Player player = (Player)sender;
 		if (!Main.getInstance().getConfig().getBoolean("enable_tpa")) {
-			player.sendMessage(Main.getInstance().getLangKey("command.tpa.disabled_message",player.getLocale()));
+			player.sendMessage(String.format("§4命令'%s'已被服务器禁用", label));
 			return true;
 		}
 
 		if (command.getName().equals("tpa")) {
 			if (args.length != 1) {
 				player.sendMessage(
-					String.format(Main.getInstance().getLangKey("command.generic.argserror"),"tpa",1,args.length)
+					String.format("§4命令'tpa'需要1个参数，而你传入了%d个",args.length)
 				);
 				return true;
 			}
@@ -50,12 +49,14 @@ public class PlayerTp implements CommandExecutor, Listener {
 				if (teleportee.getName().equals(args[0])) {
 					tpRequestsQueue.get(teleportee.getName()).add(player.getName());
 //					willTps.replace(player.getName(),lltpedPlayer.getName());
+					teleportee.sendMessage(String.format("§a玩家 §l§n%s §r§a请求传送到你这", player.getName()));
+					teleportee.sendMessage("§a输入'/tpac'接受TA的请求，输入'/tpde'拒绝");
 					new CannelTeleportThread(player,teleportee).runTaskLater(Main.getInstance(),autoCannelTicks);
 					return true;
 				}
 			}
 			player.sendMessage(
-				String.format(Main.getInstance().getLangKey("command.generic.playernotfound"),args[0])
+				String.format("§4玩家'%s'不存在",args[0])
 			);
 		}
 		else if (command.getName().equals("tpac")) {
@@ -64,8 +65,8 @@ public class PlayerTp implements CommandExecutor, Listener {
 				if (teleporter != null) {
 					new TeleportThread(teleporter,player).runTaskLater(Main.getInstance(),teleportWaitTicks);
 					willTps.replace(teleporterName,player.getName());
-					teleporter.sendMessage(Main.getInstance().getLangKey("command.tpac.willtp", teleporter.getLocale()));
-					player.sendMessage(Main.getInstance().getLangKey("command.tpac.sufceeuly", player.getLocale()));
+					teleporter.sendMessage("§a对方同意了你的传送请求，即将传送");
+					player.sendMessage("§a成功同意传送请求！");
 				}
 			}
 			tpRequestsQueue.get(player.getName()).clear();
@@ -75,8 +76,8 @@ public class PlayerTp implements CommandExecutor, Listener {
 				Player teleporter = Bukkit.getServer().getPlayer(teleporterName);
 				if (teleporter != null) {
 					willTps.replace(teleporterName,null);
-					teleporter.sendMessage(Main.getInstance().getLangKey("command.tpde.denied", teleporter.getLocale()));
-					player.sendMessage(Main.getInstance().getLangKey("command.tpde.sufceeuly", player.getLocale()));
+					teleporter.sendMessage("§2嗯..你的请求被TA拒绝了呢...");
+					player.sendMessage("§a成功拒绝传送请求！");
 				}
 			}
 			tpRequestsQueue.get(player.getName()).clear();
@@ -84,9 +85,9 @@ public class PlayerTp implements CommandExecutor, Listener {
 		else if (command.getName().equals("tpel")) {
 			for (Player teleportee : Bukkit.getServer().getOnlinePlayers()) {
 				tpRequestsQueue.get(teleportee.getName()).remove(player.getName());
-				teleportee.sendMessage(Main.getInstance().getLangKey("commond.tpa.canneled", teleportee.getLocale()));
+				teleportee.sendMessage("§2对方又取消了传送请求呢...");
 			}
-			player.sendMessage(Main.getInstance().getLangKey("command.tpel.sufceeuly", player.getLocale()));
+			player.sendMessage("§a成功取消了传送请求！");
 		}
 		return true;
 	}
@@ -102,8 +103,8 @@ class CannelTeleportThread extends BukkitRunnable {
 	@Override
 	public void run() {
 		if (PlayerTp.tpRequestsQueue.get(this.teleportee.getName()).remove(this.teleporter.getName())) {
-			this.teleporter.sendMessage(Main.getInstance().getLangKey("commond.tpa.canneled", this.teleporter.getLocale()));
-			this.teleportee.sendMessage(Main.getInstance().getLangKey("commond.tpa.canneled", this.teleportee.getLocale()));
+			this.teleporter.sendMessage("§4传送请求已被取消");
+			this.teleportee.sendMessage("§4传送请求已被取消");
 		}
 	}
 }
@@ -119,8 +120,8 @@ class TeleportThread extends BukkitRunnable {
 	public void run() {
 		if (PlayerTp.willTps.get(this.teleporter.getName()).equals(this.teleportee.getName())) {
 			this.teleporter.teleport(this.teleportee);
-			this.teleporter.sendMessage(Main.getInstance().getLangKey("commond.tpa.teleported", this.teleporter.getLocale()));
-			this.teleportee.sendMessage(Main.getInstance().getLangKey("commond.tpa.teleported", this.teleportee.getLocale()));
+			this.teleporter.sendMessage("§a传送成功,欢迎相遇！");
+			this.teleportee.sendMessage("§a传送成功,欢迎相遇！");
 		}
 	}
 }
