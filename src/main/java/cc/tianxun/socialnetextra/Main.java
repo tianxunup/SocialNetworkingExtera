@@ -4,7 +4,6 @@ import cc.tianxun.socialnetextra.command.*;
 import cc.tianxun.socialnetextra.socials.*;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.io.*;
 import java.util.*;
 
 public final class Main extends JavaPlugin {
