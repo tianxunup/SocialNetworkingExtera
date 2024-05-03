@@ -65,8 +65,8 @@ public class PlayerTp implements CommandExecutor, Listener {
 				if (teleporter != null) {
 					new TeleportThread(teleporter,player).runTaskLater(Main.getInstance(),teleportWaitTicks);
 					willTps.replace(teleporterName,player.getName());
-					teleporter.sendMessage("§a对方同意了你的传送请求，即将传送");
-					player.sendMessage("§a成功同意传送请求！");
+					teleporter.sendMessage(String.format("§a%s 同意了你的传送请求，即将传送", player.getName()));
+					player.sendMessage(String.format("§a成功同意 %s 的传送请求！", teleporterName));
 				}
 			}
 			tpRequestsQueue.get(player.getName()).clear();
@@ -76,18 +76,18 @@ public class PlayerTp implements CommandExecutor, Listener {
 				Player teleporter = Bukkit.getServer().getPlayer(teleporterName);
 				if (teleporter != null) {
 					willTps.replace(teleporterName,null);
-					teleporter.sendMessage("§2嗯..你的请求被TA拒绝了呢...");
-					player.sendMessage("§a成功拒绝传送请求！");
+					teleporter.sendMessage(String.format("§2嗯..你的请求被 %s 拒绝了呢...", player.getName()));
+					player.sendMessage(String.format("§a成功拒绝 %s 的传送请求！", teleporterName));
 				}
 			}
 			tpRequestsQueue.get(player.getName()).clear();
 		}
-		else if (command.getName().equals("tpel")) {
+		else if (command.getName().equals("tpnel")) {
 			for (Player teleportee : Bukkit.getServer().getOnlinePlayers()) {
 				tpRequestsQueue.get(teleportee.getName()).remove(player.getName());
-				teleportee.sendMessage("§2对方又取消了传送请求呢...");
+				teleportee.sendMessage(String.format("§2%s又取消了传送请求呢...", player.getName()));
+				player.sendMessage(String.format("§a成功取消了 %s 的传送请求！", teleportee.getName()));
 			}
-			player.sendMessage("§a成功取消了传送请求！");
 		}
 		return true;
 	}
