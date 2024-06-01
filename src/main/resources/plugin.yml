@@ -15,6 +15,10 @@ commands:
     description: 授予玩家称号
     permission: permission.adminstrator
     usage: "/<command> <player> <prefix>"
+  prefixs:
+    description: 查看自己称号
+    permission: permission.default
+    usage: "/<command>"
   setprefix:
     description: 设置自己称号
     permission: permission.default
