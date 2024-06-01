@@ -41,7 +41,7 @@ public class PlayerTp implements CommandExecutor, Listener {
 		if (command.getName().equals("tpa")) {
 			if (args.length != 1) {
 				player.sendMessage(
-					String.format("§4命令'tpa'需要1个参数，而你传入了%d个",args.length)
+					String.format("§4命令'%s'需要1个参数，而你传入了%d个",label,args.length)
 				);
 				return true;
 			}

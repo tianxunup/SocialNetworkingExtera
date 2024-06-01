@@ -16,7 +16,7 @@ public class Killself implements CommandExecutor, Listener {
 		}
 		Player player = (Player)sender;
 		if (!Main.getInstance().getConfig().getBoolean("enable_killself")) {
-			player.sendMessage("§4命令'killself'已被服务器禁用");
+			player.sendMessage(String.format("§4命令'%s'已被服务器禁用", label));
 			return true;
 		}
 
@@ -26,7 +26,7 @@ public class Killself implements CommandExecutor, Listener {
 	@EventHandler
 	public void onPlayerDeath(PlayerDeathEvent event) {
 		if (event.getEntity().getLastDamage() == killDamage) {
-			event.setDeathMessage(event.getEntity().getName() + "自杀了");
+			event.setDeathMessage(String.format("%s自杀了",event.getEntity().getName()));
 		}
 	}
 }
