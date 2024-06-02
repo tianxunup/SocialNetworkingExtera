@@ -2,20 +2,18 @@ package cc.tianxun.socialnetextra;
 
 import cc.tianxun.socialnetextra.command.*;
 import cc.tianxun.socialnetextra.socials.*;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerLoginEvent;
+import org.bukkit.event.*;
+import org.bukkit.event.player.*;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.*;
 
 public final class Main extends JavaPlugin implements Listener {
     private static Main instance;
+    private YamlConfiguration dataFile;
     public static Main getInstance() {
         return instance;
     }
@@ -25,6 +23,8 @@ public final class Main extends JavaPlugin implements Listener {
         // 读取配置文件
         System.out.println("Reading config.");
         this.saveDefaultConfig();  // config.yml
+        this.saveResource("data.yml",false);
+        this.dataFile = YamlConfiguration.loadConfiguration(new File(this.getDataFolder(),"data.yml"));
         // 注册命令/事件
         System.out.println("Registering events/commands.");
         PlayerTp playerTp = new PlayerTp();
@@ -47,10 +47,26 @@ public final class Main extends JavaPlugin implements Listener {
         // 保存配置文件
         System.out.println("Saving config file");
         saveConfig();
+	    try {
+		    this.dataFile.save(new File(this.getDataFolder(),"data.yml"));
+	    } catch (IOException e) {
+		    throw new RuntimeException(e);
+	    }
     }
     @EventHandler
     public void onPlayerLogin(PlayerLoginEvent event) {
         PlayerUnit unit = PlayerUnit.registerPlayerUnit(event.getPlayer());
         // unit的初始化....
+        unit.setRegisterStamp(this.dataFile.getLong(String.format("%s.register_stamp",event.getPlayer().getName())));
+        unit.setLastLoginStamp(System.currentTimeMillis());
+        this.dataFile.set(String.format("%s.last_login_stamp",event.getPlayer().getName()),unit.getLastLoginStamp());
+        unit.setPasswordHash(this.dataFile.getInt(String.format("%s.password_hash",event.getPlayer().getName())));
+        for (String prefix : this.dataFile.getStringList(String.format("%s.password_hash",event.getPlayer().getName()))) {
+            unit.addPrefix(prefix);
+        }
+    }
+    @EventHandler(priority = EventPriority.LOW)
+    public void onPlayerQuit(PlayerQuitEvent event) {
+        PlayerUnit.revokedPlayerUnit(event.getPlayer());
     }
 }
