@@ -119,6 +119,7 @@ public class PlayerUnit {
 		this.tpRequestsQuene.add(unit);
 		this.getRawPlayer().sendMessage(String.format("§a玩家 §l§n%s §r§a请求传送到你这", unit.getRawPlayer().getName()));
 		this.getRawPlayer().sendMessage("§a输入'/tpac'接受TA的请求，输入'/tpde'拒绝");
+		new AutoCancelTeleportRuquestThread(this,unit).runTaskLater(Main.getInstance(),autocancelTicks);
 		return 0;
 	}
 	public void sendTpRequestTo(PlayerUnit unit) {
@@ -151,7 +152,6 @@ public class PlayerUnit {
 			TeleportThread thread = new TeleportThread(unit,this);
 			teleportThreadList.add(thread);
 			thread.runTaskLater(Main.getInstance(),teleportWaitTicks);
-			new AutoCancelTeleportRuquestThread(this,unit).runTaskLater(Main.getInstance(),autocancelTicks);
 			unit.getRawPlayer().sendMessage(String.format("§a%s 同意了你的传送请求，即将传送", this.getRawPlayer().getName()));
 			this.getRawPlayer().sendMessage(String.format("§a成功同意 %s 的传送请求！", unit.getRawPlayer().getName()));
 		}
