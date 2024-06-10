@@ -2,11 +2,15 @@ package cc.tianxun.socialnetextra;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
 
 public class PlayerUnit {
 	private static final Map<Player,PlayerUnit> units = new HashMap<>();
+	private static final List<TeleportThread> teleportThreadList = new ArrayList<>();
+	private static final long teleportWaitTicks = 3*20;
+	private static final long autocancelTicks = 3*60*20;
 
 	// Player Data
 	private final Player rawPlayer;
@@ -14,6 +18,9 @@ public class PlayerUnit {
 	private long lastLoginStamp;
 	private int passwordHash;
 	private final List<String> prefixList = new ArrayList<>();
+
+	// Server Data
+	private final List<PlayerUnit> tpRequestsQuene = new ArrayList<>();
 
 	public static PlayerUnit getPlayerUnit(String playerName){
 		Player player = Bukkit.getPlayer(playerName);
@@ -102,5 +109,156 @@ public class PlayerUnit {
 
 	public void addPrefix(String prefix) {
 		this.prefixList.add(prefix);
+	}
+	
+	// tp
+	public int addTpRequestFrom(PlayerUnit unit) {
+		if (this.tpRequestsQuene.contains(unit)) {
+			return 1;  // Player requested.
+		}
+		this.tpRequestsQuene.add(unit);
+		this.getRawPlayer().sendMessage(String.format("§a玩家 §l§n%s §r§a请求传送到你这", unit.getRawPlayer().getName()));
+		this.getRawPlayer().sendMessage("§a输入'/tpac'接受TA的请求，输入'/tpde'拒绝");
+		return 0;
+	}
+	public void sendTpRequestTo(PlayerUnit unit) {
+		int status = unit.addTpRequestFrom(this);
+		if (status == 0) {
+			this.getRawPlayer().sendMessage("§a成功发送传送请求！");
+		}
+		else if (status == 1) {
+			this.getRawPlayer().sendMessage("§4您好像已经请求过TA了呢，等一等吧...");
+		}
+	}
+	public void acceptAllTeleportRequests() {
+		for (PlayerUnit unit : this.tpRequestsQuene) {
+			TeleportThread thread = new TeleportThread(unit,this);
+			teleportThreadList.add(thread);
+			thread.runTaskLater(Main.getInstance(),teleportWaitTicks);
+			unit.getRawPlayer().sendMessage(String.format("§a%s 同意了你的传送请求，即将传送", this.getRawPlayer().getName()));
+			this.getRawPlayer().sendMessage(String.format("§a成功同意 %s 的传送请求！", unit.getRawPlayer().getName()));
+		}
+		if (this.tpRequestsQuene.isEmpty()) {
+			this.getRawPlayer().sendMessage("§4没有人向你发送传送请求哦");
+		}
+		else {
+			this.tpRequestsQuene.clear();
+		}
+	}
+	public void acceptTeleportRequestFrom(PlayerUnit unit) {
+		if (this.tpRequestsQuene.contains(unit)) {
+			this.tpRequestsQuene.remove(unit);
+			TeleportThread thread = new TeleportThread(unit,this);
+			teleportThreadList.add(thread);
+			thread.runTaskLater(Main.getInstance(),teleportWaitTicks);
+			new AutoCancelTeleportRuquestThread(this,unit).runTaskLater(Main.getInstance(),autocancelTicks);
+			unit.getRawPlayer().sendMessage(String.format("§a%s 同意了你的传送请求，即将传送", this.getRawPlayer().getName()));
+			this.getRawPlayer().sendMessage(String.format("§a成功同意 %s 的传送请求！", unit.getRawPlayer().getName()));
+		}
+		else {
+			this.getRawPlayer().sendMessage(String.format("§4%s 尚未向你发送传送请求", unit.getRawPlayer().getName()));
+		}
+	}
+	public void denyAllTeleportRequests() {
+		for (PlayerUnit unit : this.tpRequestsQuene) {
+			unit.getRawPlayer().sendMessage(String.format("§2嗯..你的请求被 %s 拒绝了呢...", this.getRawPlayer().getName()));
+			this.getRawPlayer().sendMessage(String.format("§a成功拒绝 %s 的传送请求！", unit.getRawPlayer().getName()));
+		}
+		if (this.tpRequestsQuene.isEmpty()) {
+			this.getRawPlayer().sendMessage("§4没有人向你发送传送请求哦");
+		}
+		else {
+			this.tpRequestsQuene.clear();
+		}
+	}
+	public void denyTeleportRequestFrom(PlayerUnit unit) {
+		if (this.tpRequestsQuene.contains(unit)) {
+			this.tpRequestsQuene.remove(unit);
+			unit.getRawPlayer().sendMessage(String.format("§2嗯..你的请求被 %s 拒绝了呢...", this.getRawPlayer().getName()));
+			this.getRawPlayer().sendMessage(String.format("§a成功拒绝 %s 的传送请求！", unit.getRawPlayer().getName()));
+		}
+		else {
+			this.getRawPlayer().sendMessage(String.format("§4%s 尚未向你发送传送请求", unit.getRawPlayer().getName()));
+		}
+	}
+	public void cancelAllTeleportRequests() {
+		for (TeleportThread thread : teleportThreadList) {
+			if (this.equals(thread.getTeleporter())) {
+				this.getRawPlayer().sendMessage(String.format("§a成功取消了 %s 的传送请求！", thread.getTeleportee().getRawPlayer().getName()));
+				thread.getTeleportee().getRawPlayer().sendMessage(String.format("§2%s又取消了传送请求呢...", this.getRawPlayer().getName()));
+			}
+			else if (this.equals(thread.getTeleportee())) {
+				this.getRawPlayer().sendMessage(String.format("§a成功取消了 %s 的传送请求！", thread.getTeleporter().getRawPlayer().getName()));
+				thread.getTeleporter().getRawPlayer().sendMessage(String.format("§2%s又取消了传送请求呢...", this.getRawPlayer().getName()));
+			}
+			thread.cancel();
+		}
+		teleportThreadList.clear();
+		this.getRawPlayer().sendMessage("§4你还没有传送任务呢");
+	}
+	public void cancelTeleportRequestWith(PlayerUnit unit) {
+		for (TeleportThread thread : teleportThreadList) {
+			if (
+				(this.equals(thread.getTeleporter()) && unit.equals(thread.getTeleportee())) ||
+					(this.equals(thread.getTeleportee()) && unit.equals(thread.getTeleporter()))
+			) {
+				thread.cancel();
+				this.getRawPlayer().sendMessage(String.format("§a成功取消了 %s 的传送请求！", unit.getRawPlayer().getName()));
+				unit.getRawPlayer().sendMessage(String.format("§2%s又取消了传送请求呢...", this.getRawPlayer().getName()));
+				teleportThreadList.remove(thread);
+				return;
+			}
+		}
+		this.getRawPlayer().sendMessage(String.format("§4%s 和您之间没有传送请求哦", unit.getRawPlayer().getName()));
+	}
+	public void cancelTeleportRequestForTimeOut(PlayerUnit unit) {
+		for (TeleportThread thread : teleportThreadList) {
+			if (
+				(this.equals(thread.getTeleporter()) && unit.equals(thread.getTeleportee())) ||
+					(this.equals(thread.getTeleportee()) && unit.equals(thread.getTeleporter()))
+			) {
+				thread.cancel();
+				this.getRawPlayer().sendMessage(String.format("§a取消与 %s 的传送请求！", unit.getRawPlayer().getName()));
+				unit.getRawPlayer().sendMessage(String.format("§a取消与 %s 的传送请求！", this.getRawPlayer().getName()));
+				teleportThreadList.remove(thread);
+				return;
+			}
+		}
+	}
+}
+
+class TeleportThread extends BukkitRunnable {
+	private final PlayerUnit teleporter;
+	private final PlayerUnit teleportee;
+	public TeleportThread(PlayerUnit teleporter, PlayerUnit teleportee) {
+		this.teleporter = teleporter;
+		this.teleportee = teleportee;
+	}
+
+	public PlayerUnit getTeleporter() {
+		return this.teleporter;
+	}
+	public PlayerUnit getTeleportee() {
+		return this.teleportee;
+	}
+
+	@Override
+	public void run() {
+		this.teleporter.getRawPlayer().teleport(this.teleportee.getRawPlayer());
+	}
+}
+
+class AutoCancelTeleportRuquestThread extends BukkitRunnable {
+	private final PlayerUnit teleporter;
+	private final PlayerUnit teleportee;
+
+	public AutoCancelTeleportRuquestThread(PlayerUnit teleporter, PlayerUnit teleportee) {
+		this.teleporter = teleporter;
+		this.teleportee = teleportee;
+	}
+
+	@Override
+	public void run() {
+		this.teleporter.cancelTeleportRequestForTimeOut(this.teleportee);
 	}
 }

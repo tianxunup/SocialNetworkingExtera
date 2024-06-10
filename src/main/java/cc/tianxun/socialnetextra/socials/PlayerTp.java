@@ -1,19 +1,16 @@
 package cc.tianxun.socialnetextra.socials;
 
-import org.bukkit.Bukkit;
+import cc.tianxun.socialnetextra.PlayerUnit;
 import org.bukkit.command.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.*;
 
 import cc.tianxun.socialnetextra.Main;
 import org.bukkit.event.player.*;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
 
 public class PlayerTp implements CommandExecutor, Listener {
-	private static final long teleportWaitTicks = 3*20;
-	private static final long autoCannelTicks = 3*60*20;
 	public static final Map<String, List<String>> tpRequestsQueue = new HashMap<>();
 	public static final Map<String,String> willTps = new HashMap<>();
 	@EventHandler
@@ -45,83 +42,60 @@ public class PlayerTp implements CommandExecutor, Listener {
 				);
 				return true;
 			}
-			for (Player teleportee : Bukkit.getServer().getOnlinePlayers()) {
-				if (teleportee.getName().equals(args[0])) {
-					tpRequestsQueue.get(teleportee.getName()).add(player.getName());
-//					willTps.replace(player.getName(),lltpedPlayer.getName());
-					teleportee.sendMessage(String.format("§a玩家 §l§n%s §r§a请求传送到你这", player.getName()));
-					teleportee.sendMessage("§a输入'/tpac'接受TA的请求，输入'/tpde'拒绝");
-					new CannelTeleportThread(player,teleportee).runTaskLater(Main.getInstance(),autoCannelTicks);
-					return true;
-				}
+			PlayerUnit teleportee = PlayerUnit.getPlayerUnit(args[0]);
+			if (teleportee == null) {
+				player.sendMessage(
+					String.format("§4未找到玩家'%s'",args[0])
+				);
+				return true;
 			}
-			player.sendMessage(
-				String.format("§4玩家'%s'不存在",args[0])
-			);
+			PlayerUnit.getPlayerUnit(player).sendTpRequestTo(teleportee);
 		}
 		else if (command.getName().equals("tpac")) {
-			for (String teleporterName : tpRequestsQueue.get(player.getName())) {
-				Player teleporter = Bukkit.getServer().getPlayer(teleporterName);
-				if (teleporter != null) {
-					new TeleportThread(teleporter,player).runTaskLater(Main.getInstance(),teleportWaitTicks);
-					willTps.replace(teleporterName,player.getName());
-					teleporter.sendMessage(String.format("§a%s 同意了你的传送请求，即将传送", player.getName()));
-					player.sendMessage(String.format("§a成功同意 %s 的传送请求！", teleporterName));
+			if (args.length == 0) {
+				PlayerUnit.getPlayerUnit(player).acceptAllTeleportRequests();
+			}
+			else {
+				for (String playerName : args) {
+					PlayerUnit teleporter = PlayerUnit.getPlayerUnit(playerName);
+					if (teleporter == null) {
+						player.sendMessage(String.format("§4未找到玩家'%s'", playerName));
+						continue;
+					}
+					PlayerUnit.getPlayerUnit(player).acceptTeleportRequestFrom(teleporter);
 				}
 			}
-			tpRequestsQueue.get(player.getName()).clear();
 		}
 		else if (command.getName().equals("tpde")) {
-			for (String teleporterName : tpRequestsQueue.get(player.getName())) {
-				Player teleporter = Bukkit.getServer().getPlayer(teleporterName);
-				if (teleporter != null) {
-					willTps.replace(teleporterName,null);
-					teleporter.sendMessage(String.format("§2嗯..你的请求被 %s 拒绝了呢...", player.getName()));
-					player.sendMessage(String.format("§a成功拒绝 %s 的传送请求！", teleporterName));
+			if (args.length == 0) {
+				PlayerUnit.getPlayerUnit(player).denyAllTeleportRequests();
+			}
+			else {
+				for (String playerName : args) {
+					PlayerUnit teleporter = PlayerUnit.getPlayerUnit(playerName);
+					if (teleporter == null) {
+						player.sendMessage(String.format("§4未找到玩家'%s'", playerName));
+						continue;
+					}
+					PlayerUnit.getPlayerUnit(player).denyTeleportRequestFrom(teleporter);
 				}
 			}
-			tpRequestsQueue.get(player.getName()).clear();
 		}
 		else if (command.getName().equals("tpnel")) {
-			for (Player teleportee : Bukkit.getServer().getOnlinePlayers()) {
-				tpRequestsQueue.get(teleportee.getName()).remove(player.getName());
-				teleportee.sendMessage(String.format("§2%s又取消了传送请求呢...", player.getName()));
-				player.sendMessage(String.format("§a成功取消了 %s 的传送请求！", teleportee.getName()));
+			if (args.length == 0) {
+				PlayerUnit.getPlayerUnit(player).cancelAllTeleportRequests();
+			}
+			else {
+				for (String playerName : args) {
+					PlayerUnit teleporter = PlayerUnit.getPlayerUnit(playerName);
+					if (teleporter == null) {
+						player.sendMessage(String.format("§4未找到玩家'%s'", playerName));
+						continue;
+					}
+					PlayerUnit.getPlayerUnit(player).cancelTeleportRequestWith(teleporter);
+				}
 			}
 		}
 		return true;
-	}
-}
-
-class CannelTeleportThread extends BukkitRunnable {
-	private final Player teleporter;
-	private final Player teleportee;
-	public CannelTeleportThread(Player teleporter, Player teleportee) {
-		this.teleporter = teleporter;
-		this.teleportee = teleportee;
-	}
-	@Override
-	public void run() {
-		if (PlayerTp.tpRequestsQueue.get(this.teleportee.getName()).remove(this.teleporter.getName())) {
-			this.teleporter.sendMessage("§4传送请求已被取消");
-			this.teleportee.sendMessage("§4传送请求已被取消");
-		}
-	}
-}
-
-class TeleportThread extends BukkitRunnable {
-	private final Player teleporter;
-	private final Player teleportee;
-	public TeleportThread(Player teleporter, Player teleportee) {
-		this.teleporter = teleporter;
-		this.teleportee = teleportee;
-	}
-	@Override
-	public void run() {
-		if (PlayerTp.willTps.get(this.teleporter.getName()).equals(this.teleportee.getName())) {
-			this.teleporter.teleport(this.teleportee);
-			this.teleporter.sendMessage("§a传送成功,欢迎相遇！");
-			this.teleportee.sendMessage("§a传送成功,欢迎相遇！");
-		}
 	}
 }
