@@ -240,7 +240,7 @@ public class PlayerUnit {
 			if (this.epithetWornList.size() > Main.getInstance().getConfig().getInt("max_epithets_worn")) {
 				this.epithetList.remove(0);
 			}
-			this.getRawPlayer().sendMessage(String.format("§a成功佩戴称号 '§r%s§r'", this.epithetList.get(id)));
+			this.getRawPlayer().sendMessage(String.format("§a成功佩戴称号 '§r%s§r§a'", this.epithetList.get(id)));
 		}
 		else {
 			this.getRawPlayer().sendMessage(String.format("§4无效的id: '%d'", id+1));

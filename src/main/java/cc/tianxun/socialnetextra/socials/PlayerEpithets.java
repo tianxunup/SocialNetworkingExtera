@@ -19,7 +19,7 @@ public class PlayerEpithets implements CommandExecutor {
 			}
 			else {
 				unit.awarded(args[1]);
-				sender.sendMessage(String.format("§a成功授予玩家%s 称号'%s'",args[0],args[1]));
+				sender.sendMessage(String.format("§a成功授予玩家%s 称号'§r%s§r§a'",args[0],args[1]));
 			}
 		}
 		else if (command.getName().equals("epithets")) {
@@ -40,7 +40,7 @@ public class PlayerEpithets implements CommandExecutor {
 					StringBuilder message = new StringBuilder("§b你当前拥有如下称号：\n");
 					int index = 1;
 					for (String epithet : epithetList) {
-						message.append(String.format(" §b§n%d §r- %s§r\n", index, epithet));
+						message.append(String.format(" §b§n%d§r - %s§r\n", index, epithet));
 						index += 1;
 					}
 					player.sendMessage(message.toString());
