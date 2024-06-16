@@ -33,14 +33,19 @@ public class PlayerEpithets implements CommandExecutor {
 					return true;
 				}
 				List<String> epithetList = PlayerUnit.getPlayerUnit(player).getEpithetList();
+				List<Integer> epithetWornList = PlayerUnit.getPlayerUnit(player).getEpithetWornList();
 				if (epithetList.isEmpty()) {
 					player.sendMessage("§b你当前没有称号哦");
 				}
 				else {
 					StringBuilder message = new StringBuilder("§b你当前拥有如下称号：\n");
-					int index = 1;
+					int index = 0;
 					for (String epithet : epithetList) {
-						message.append(String.format(" §b§n%d§r - %s§r\n", index, epithet));
+						message.append(String.format(" §b§n%d§r - %s§r ", index+1, epithet));
+						if (epithetWornList.contains(index)) {
+							message.append("§c(使用中)§r");
+						}
+						message.append("\n");
 						index += 1;
 					}
 					player.sendMessage(message.toString());
@@ -60,9 +65,9 @@ public class PlayerEpithets implements CommandExecutor {
 				}
 				else {
 					List<String> epithetList = unit.getEpithetList();
-					StringBuilder message = new StringBuilder(String.format("§b玩家%s 当前拥有如下称号：\n", unit.getRawPlayer().getName()));
+					StringBuilder message = new StringBuilder(String.format("§b玩家%s 当前拥有如下称号：§r\n", unit.getRawPlayer().getName()));
 					for (String epithet : epithetList) {
-						message.append(String.format("%s，", epithet));
+						message.append(String.format("%s§r，", epithet));
 					}
 					sender.sendMessage(message.toString());
 				}

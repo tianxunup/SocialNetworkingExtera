@@ -254,6 +254,9 @@ public class PlayerUnit {
 			}
 		}
 	}
+	public List<Integer> getEpithetWornList() {
+		return new ArrayList<>(this.epithetWornList);
+	}
 	public void deleteEpithet(int id) {
 		this.epithetList.remove(id);
 	}
