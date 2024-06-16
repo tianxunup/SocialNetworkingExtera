@@ -41,6 +41,7 @@ public final class Main extends JavaPlugin implements Listener {
         Objects.requireNonNull(getCommand("epithets")).setExecutor(playerEpithets);
         getServer().getPluginManager().registerEvents(playerTp,this);
         getServer().getPluginManager().registerEvents(killself,this);
+        getServer().getPluginManager().registerEvents(playerEpithets,this);
         getServer().getPluginManager().registerEvents(this,this);
     }
     @Override

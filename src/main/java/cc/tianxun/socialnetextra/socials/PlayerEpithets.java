@@ -3,10 +3,12 @@ package cc.tianxun.socialnetextra.socials;
 import cc.tianxun.socialnetextra.PlayerUnit;
 import org.bukkit.command.*;
 import org.bukkit.entity.Player;
+import org.bukkit.event.*;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 import java.util.List;
 
-public class PlayerEpithets implements CommandExecutor {
+public class PlayerEpithets implements CommandExecutor, Listener {
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 		if (command.getName().equals("awarded")) {
@@ -98,8 +100,21 @@ public class PlayerEpithets implements CommandExecutor {
 				}
 			}
 		}
-
 		return true;
+	}
+	@EventHandler
+	public void onAsyncPlayerChat(AsyncPlayerChatEvent event) {
+		StringBuilder message = new StringBuilder();
+		PlayerUnit unit = PlayerUnit.getPlayerUnit(event.getPlayer());
+		List<String> epithetList = unit.getEpithetList();
+		for (Integer epithetId : unit.getEpithetWornList()) {
+			message.append(String.format("§r§7[%s§r§7]", epithetList.get(epithetId)));
+		}
+		if (!epithetList.isEmpty()) {
+			message.append(" ");
+		}
+		message.append(String.format("§r%s§r§7:", event.getPlayer().getName()));
+		event.setFormat(message.toString());
 	}
 }
 
