@@ -61,8 +61,8 @@ public final class Main extends JavaPlugin implements Listener {
         unit.setLastLoginStamp(System.currentTimeMillis());
         this.dataFile.set(String.format("%s.last_login_stamp",event.getPlayer().getName()),unit.getLastLoginStamp());
         unit.setPasswordHash(this.dataFile.getInt(String.format("%s.password_hash",event.getPlayer().getName())));
-        for (String prefix : this.dataFile.getStringList(String.format("%s.password_hash",event.getPlayer().getName()))) {
-            unit.addPrefix(prefix);
+        for (String epithet : this.dataFile.getStringList(String.format("%s.epithets",event.getPlayer().getName()))) {
+            unit.addEpithetx(epithet);
         }
     }
     @EventHandler(priority = EventPriority.LOW)
