@@ -17,7 +17,8 @@ public class PlayerUnit {
 	private long registerStamp;
 	private long lastLoginStamp;
 	private int passwordHash;
-	private final List<String> prefixList = new ArrayList<>();
+	private final List<String> epithetList = new ArrayList<>();
+	private final List<Integer> epithetWornList = new ArrayList<>();
 
 	// Server Data
 	private final List<PlayerUnit> tpRequestsQuene = new ArrayList<>();
@@ -107,8 +108,8 @@ public class PlayerUnit {
 		return (password.hashCode() == this.passwordHash);
 	}
 
-	public void addPrefix(String prefix) {
-		this.prefixList.add(prefix);
+	public void addEpithetx(String epithet) {
+		this.epithetList.add(epithet);
 	}
 	
 	// tp
@@ -224,6 +225,28 @@ public class PlayerUnit {
 				return;
 			}
 		}
+	}
+
+	public void awarded(String epithet) {
+		this.epithetList.add(epithet);
+	}
+	public void wearEpithet(int id) {
+		if (id < this.epithetList.size()) {
+			this.epithetWornList.add(id);
+			if (this.epithetWornList.size() > Main.getInstance().getConfig().getInt("max_epithets_worn")) {
+				this.epithetList.remove(0);
+			}
+			this.getRawPlayer().sendMessage(String.format("§a成功佩戴称号 '§r%s§r'", this.epithetList.get(id)));
+		}
+		else {
+			this.getRawPlayer().sendMessage(String.format("§4无效的id: '%d'", id+1));
+		}
+	}
+	public void deleteEpithet(int id) {
+		this.epithetList.remove(id);
+	}
+	public List<String> getEpithetList() {
+		return new ArrayList<>(this.epithetList);
 	}
 }
 

@@ -20,9 +20,11 @@
 
 * `killself`：自杀。可在`config.yml`中禁用。
 
-* `awarded`：尚未开发
+* `awarded <玩家> <称号>`：授予玩家称号
 
-* `setepithet`：尚未开发
+* `epithets [玩家(仅管理员可填)]`：查看玩家称号，不填默认查看自己的
+
+* `setepithet <数字id>(可多个)`：设置要佩戴的称号，数字id可通过 `/epithets` 查看
 
 ## 配置文件
 ### `config.yml`
@@ -31,7 +33,7 @@
 enable_tpa: 是否启用tpa,默认为true
 enable_killself: 是否启用killself,默认为true
 
-max_epithets_worn: 玩家最大佩戴的称号数，默认为1（相关功能尚未开发）
+max_epithets_worn: 玩家最大佩戴的称号数，默认为1
 
 allow_customize_epithet: 是否允许玩家自定义称号，默认为true（相关功能尚未开发）
 ````
