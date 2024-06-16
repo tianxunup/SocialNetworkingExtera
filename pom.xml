@@ -6,7 +6,7 @@
 
   <groupId>cc.tianxun</groupId>
   <artifactId>SocialNetworkingExtra</artifactId>
-  <version>alpha-112</version>
+  <version>alpha-113</version>
   <packaging>jar</packaging>
 
   <name>SocialNetExtra</name>

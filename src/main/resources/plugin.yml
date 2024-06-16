@@ -13,13 +13,13 @@ authors:
 commands:
   awarded:
     description: 授予玩家称号
-    permission: permission.adminstrator
+    permission: permission.administrator
     usage: "/<command> <player> <prefix>"
-  prefixs:
+  epithets:
     description: 查看自己称号
     permission: permission.default
     usage: "/<command>"
-  setprefix:
+  setepithet:
     description: 设置自己称号
     permission: permission.default
     usage: "/<command> <id>"

@@ -22,7 +22,7 @@
 
 * `awarded`：尚未开发
 
-* `setprefix`：尚未开发
+* `setepithet`：尚未开发
 
 ## 配置文件
 ### `config.yml`
@@ -31,9 +31,9 @@
 enable_tpa: 是否启用tpa,默认为true
 enable_killself: 是否启用killself,默认为true
 
-max_prefixs_worn: 玩家最大佩戴的称号数，默认为1（相关功能尚未开发）
+max_epithets_worn: 玩家最大佩戴的称号数，默认为1（相关功能尚未开发）
 
-allow_customize_prefix: 是否允许玩家自定义称号，默认为true（相关功能尚未开发）
+allow_customize_epithet: 是否允许玩家自定义称号，默认为true（相关功能尚未开发）
 ````
 
 ## 数据存储
@@ -44,5 +44,5 @@ steve(玩家名字):
   register_stamp: 注册时间戳
   last_login_stamp: 上一次登录时间戳
   password_hash: 密码的hash值(Object.hashCode())
-  prefixs: 称号列表
+  epithets: 称号列表
 ````
