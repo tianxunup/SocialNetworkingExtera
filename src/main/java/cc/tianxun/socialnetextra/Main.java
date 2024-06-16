@@ -58,7 +58,7 @@ public final class Main extends JavaPlugin implements Listener {
     public FileConfiguration getData() {
         return this.dataFile;
     }
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerLogin(PlayerLoginEvent event) {
         PlayerUnit unit = PlayerUnit.registerPlayerUnit(event.getPlayer());
         // unit的初始化....
@@ -73,7 +73,7 @@ public final class Main extends JavaPlugin implements Listener {
             unit.addWornEpithet(epithetId);
         }
     }
-    @EventHandler(priority = EventPriority.LOW)
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerQuit(PlayerQuitEvent event) {
         PlayerUnit.revokedPlayerUnit(event.getPlayer());
     }

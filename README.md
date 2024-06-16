@@ -1,7 +1,7 @@
 # 简介
 `SocialNetworkingExtera`是一款Bukkit插件，对玩家社交进行了扩展。
 
-主要功能：`tpa`、`killself`(自杀)、称号系统(尚未开发)
+主要功能：`tpa`、`killself`(自杀)、称号系统
 
 目前该插件处于alpha版本，有不足欢迎指出！
 
@@ -29,22 +29,23 @@
 ## 配置文件
 ### `config.yml`
 服务器主要配置文件。
-````
+```yaml
 enable_tpa: 是否启用tpa,默认为true
 enable_killself: 是否启用killself,默认为true
 
 max_epithets_worn: 玩家最大佩戴的称号数，默认为1
 
 allow_customize_epithet: 是否允许玩家自定义称号，默认为true（相关功能尚未开发）
-````
+```
 
 ## 数据存储
 ### `data.yml`
-储存玩家数据的主要文件（相关功能尚未开发）。
-````
+储存玩家数据的主要文件（除称号列表以外相关功能尚未开发）。
+```yaml
 steve(玩家名字):
   register_stamp: 注册时间戳
   last_login_stamp: 上一次登录时间戳
   password_hash: 密码的hash值(Object.hashCode())
   epithets: 称号列表
-````
+  epithets_worn: 玩家佩戴称号列表（数字id）
+```

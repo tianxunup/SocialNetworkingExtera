@@ -5,6 +5,8 @@ import org.bukkit.command.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.*;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.List;
 
@@ -105,6 +107,14 @@ public class PlayerEpithets implements CommandExecutor, Listener {
 	@EventHandler
 	public void onAsyncPlayerChat(AsyncPlayerChatEvent event) {
 		event.setFormat(String.format("%s§r§7: §r%s", PlayerUnit.getPlayerUnit(event.getPlayer()).getDisplayName(),event.getMessage()));
+	}
+	@EventHandler
+	public void onPlayerJoin(PlayerJoinEvent event) {
+		event.setJoinMessage(String.format("%s §r§e加入了游戏", PlayerUnit.getPlayerUnit(event.getPlayer()).getDisplayName()));
+	}
+	@EventHandler
+	public void onPlayerQuit(PlayerQuitEvent event) {
+		event.setQuitMessage(String.format("%s §r§e退出了游戏", PlayerUnit.getPlayerUnit(event.getPlayer()).getDisplayName()));
 	}
 }
 
