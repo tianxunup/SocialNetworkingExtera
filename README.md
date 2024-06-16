@@ -20,11 +20,17 @@
 
 * `killself`：自杀。可在`config.yml`中禁用。
 
-* `awarded <玩家> <称号>`：授予玩家称号
+* `awarded <玩家> <称号>`(管理员)：授予玩家称号（可使用&代替§）
+
+* `delepithet <玩家>`(管理员)：删除玩家称号
 
 * `epithets [玩家(仅管理员可填)]`：查看玩家称号，不填默认查看自己的
 
 * `setepithet <数字id>(可多个)`：设置要佩戴的称号，数字id可通过 `/epithets` 查看
+
+* `awardedme <称号>`：授予自己称号（可使用&代替§）（如果服务器允许玩家自定义称号）
+
+* `delmyepithet <数字id>`：删除自己的称号（如果服务器允许玩家自定义称号），数字id可通过 `/epithets` 查看
 
 ## 配置文件
 ### `config.yml`
@@ -35,7 +41,7 @@ enable_killself: 是否启用killself,默认为true
 
 max_epithets_worn: 玩家最大佩戴的称号数，默认为1
 
-allow_customize_epithet: 是否允许玩家自定义称号，默认为true（相关功能尚未开发）
+allow_customize_epithet: 是否允许玩家自定义称号，默认为true
 ```
 
 ## 数据存储

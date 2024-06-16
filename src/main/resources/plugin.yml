@@ -15,6 +15,18 @@ commands:
     description: 授予玩家称号
     permission: permission.administrator
     usage: "/<command> <player> <prefix>"
+  delepithet:
+    description: 删除玩家称号
+    permission: permission.administrator
+    usage: "/<command> <player> <prefix>"
+  awardedme:
+    description: 授予自己称号
+    permission: permission.default
+    usage: "/<command> <prefix>"
+  delmyepithet:
+    description: 删除自己称号
+    permission: permission.default
+    usage: "/<command> <prefix>"
   epithets:
     description: 查看自己称号
     permission: permission.default

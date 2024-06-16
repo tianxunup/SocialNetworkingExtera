@@ -1,5 +1,6 @@
 package cc.tianxun.socialnetextra.socials;
 
+import cc.tianxun.socialnetextra.Main;
 import cc.tianxun.socialnetextra.PlayerUnit;
 import org.bukkit.command.*;
 import org.bukkit.entity.Player;
@@ -22,8 +23,69 @@ public class PlayerEpithets implements CommandExecutor, Listener {
 				sender.sendMessage(String.format("§4玩家'%s' 不存在",args[0]));
 			}
 			else {
-				unit.awarded(args[1]);
+				unit.awarded(args[1].replace("&","§"));
 				sender.sendMessage(String.format("§a成功授予玩家%s 称号'§r%s§r§a'",args[0],args[1]));
+			}
+		}
+		else if (command.getName().equals("delepithet")) {
+			if (args.length < 2) {
+				sender.sendMessage(String.format("§4命令'%s'需要2个参数，而你传入了%d个",label,args.length));
+			}
+			PlayerUnit unit = PlayerUnit.getPlayerUnit(args[0]);
+			if (unit == null) {
+				sender.sendMessage(String.format("§4玩家'%s' 不存在",args[0]));
+			}
+			else {
+				try {
+					unit.deleteEpithet(Integer.parseInt(args[1]));
+				}
+				catch (NumberFormatException e) {
+					sender.sendMessage(String.format("无效的参数 '%s'", args[1]));
+				}
+				sender.sendMessage(String.format("§a成功删除玩家%s 称号'§r%s§r§a'",args[0],args[1]));
+			}
+		}
+		else if (command.getName().equals("awardedme")) {
+			if (!Main.getInstance().getConfig().getBoolean("allow_customize_epithet")) {
+				sender.sendMessage("§4服务器未启用自定义称号");
+				return true;
+			}
+			PlayerUnit unit;
+			if (sender instanceof Player) {
+				unit = PlayerUnit.getPlayerUnit((Player) sender);
+			}
+			else {
+				sender.sendMessage("§4Only players can use this command.");
+				return true;
+			}
+			if (args.length < 1) {
+				sender.sendMessage(String.format("§4命令'%s'需要1个参数，而你传入了%d个",label,args.length));
+			}
+			unit.awarded(args[0].replace("&","§"));
+			sender.sendMessage(String.format("§a成功授予自己称号'§r%s§r§a'",args[0]));
+		}
+		else if (command.getName().equals("delmyepithet")) {
+			if (!Main.getInstance().getConfig().getBoolean("allow_customize_epithet")) {
+				sender.sendMessage("§4服务器未启用自定义称号");
+				return true;
+			}
+			PlayerUnit unit;
+			if (sender instanceof Player) {
+				unit = PlayerUnit.getPlayerUnit((Player) sender);
+			}
+			else {
+				sender.sendMessage("§4Only players can use this command.");
+				return true;
+			}
+			if (args.length < 1) {
+				sender.sendMessage(String.format("§4命令'%s'需要1个参数，而你传入了%d个",label,args.length));
+			}
+			try {
+				unit.deleteEpithet(Integer.parseInt(args[0]));
+				sender.sendMessage(String.format("§a成功删除自己称号'§r%s§r§a'",args[0]));
+			}
+			catch (NumberFormatException ignored) {
+				sender.sendMessage(String.format("无效的参数 '%s'", args[0]));
 			}
 		}
 		else if (command.getName().equals("epithets")) {

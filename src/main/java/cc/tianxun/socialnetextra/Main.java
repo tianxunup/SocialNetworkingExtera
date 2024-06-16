@@ -37,7 +37,10 @@ public final class Main extends JavaPlugin implements Listener {
         Objects.requireNonNull(getCommand("tpnel")).setExecutor(playerTp);
         Objects.requireNonNull(getCommand("killself")).setExecutor(killself);
         Objects.requireNonNull(getCommand("awarded")).setExecutor(playerEpithets);
+        Objects.requireNonNull(getCommand("awardedme")).setExecutor(playerEpithets);
         Objects.requireNonNull(getCommand("setepithet")).setExecutor(playerEpithets);
+        Objects.requireNonNull(getCommand("delmyepithet")).setExecutor(playerEpithets);
+        Objects.requireNonNull(getCommand("delepithets")).setExecutor(playerEpithets);
         Objects.requireNonNull(getCommand("epithets")).setExecutor(playerEpithets);
         getServer().getPluginManager().registerEvents(playerTp,this);
         getServer().getPluginManager().registerEvents(killself,this);
