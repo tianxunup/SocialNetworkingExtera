@@ -22,6 +22,7 @@ public class PlayerUnit {
 
 	// Server Data
 	private final List<PlayerUnit> tpRequestsQuene = new ArrayList<>();
+	private String displayName;
 
 	public static PlayerUnit getPlayerUnit(String playerName){
 		Player player = Bukkit.getPlayer(playerName);
@@ -71,17 +72,18 @@ public class PlayerUnit {
 	}
 	public static void revokedPlayerUnit(PlayerUnit unit) {
 		if (!units.containsValue(unit)) {
-			Main.getInstance().getLogger().warning(String.format("Player '%s' didn't register.", unit.getRawPlayer().getName()));
+			Main.getInstance().getLogger().warning(String.format("Player '%s' didn't register.", unit.getDisplayName()));
 		}
-		Main.getInstance().getData().set(String.format("%s.register_stamp", unit.getRawPlayer().getName()),unit.getRegisterStamp());
-		Main.getInstance().getData().set(String.format("%s.password_hash", unit.getRawPlayer().getName()),unit.passwordHash);
-		Main.getInstance().getData().set(String.format("%s.epithets", unit.getRawPlayer().getName()),unit.epithetList);
-		Main.getInstance().getData().set(String.format("%s.epithets_worn", unit.getRawPlayer().getName()),unit.epithetWornList);
+		Main.getInstance().getData().set(String.format("%s.register_stamp", unit.getDisplayName()),unit.getRegisterStamp());
+		Main.getInstance().getData().set(String.format("%s.password_hash", unit.getDisplayName()),unit.passwordHash);
+		Main.getInstance().getData().set(String.format("%s.epithets", unit.getDisplayName()),unit.epithetList);
+		Main.getInstance().getData().set(String.format("%s.epithets_worn", unit.getDisplayName()),unit.epithetWornList);
 		units.remove(unit.getRawPlayer());
 	}
 
 	private PlayerUnit(Player player) {
 		this.rawPlayer = player;
+		this.updateDisplayName();
 	}
 
 	public Player getRawPlayer() {
@@ -122,7 +124,7 @@ public class PlayerUnit {
 			return 1;  // Player requested.
 		}
 		this.tpRequestsQuene.add(unit);
-		this.getRawPlayer().sendMessage(String.format("§a玩家 §l§n%s §r§a请求传送到你这", unit.getRawPlayer().getName()));
+		this.getRawPlayer().sendMessage(String.format("§a玩家 §l§n%s §r§a请求传送到你这", unit.getDisplayName()));
 		this.getRawPlayer().sendMessage("§a输入'/tpac'接受TA的请求，输入'/tpde'拒绝");
 		new AutoCancelTeleportRuquestThread(this,unit).runTaskLater(Main.getInstance(),autocancelTicks);
 		return 0;
@@ -141,8 +143,8 @@ public class PlayerUnit {
 			TeleportThread thread = new TeleportThread(unit,this);
 			teleportThreadList.add(thread);
 			thread.runTaskLater(Main.getInstance(),teleportWaitTicks);
-			unit.getRawPlayer().sendMessage(String.format("§a%s 同意了你的传送请求，即将传送", this.getRawPlayer().getName()));
-			this.getRawPlayer().sendMessage(String.format("§a成功同意 %s 的传送请求！", unit.getRawPlayer().getName()));
+			unit.getRawPlayer().sendMessage(String.format("§a%s 同意了你的传送请求，即将传送", this.getDisplayName()));
+			this.getRawPlayer().sendMessage(String.format("§a成功同意 %s 的传送请求！", unit.getDisplayName()));
 		}
 		if (this.tpRequestsQuene.isEmpty()) {
 			this.getRawPlayer().sendMessage("§4没有人向你发送传送请求哦");
@@ -157,17 +159,17 @@ public class PlayerUnit {
 			TeleportThread thread = new TeleportThread(unit,this);
 			teleportThreadList.add(thread);
 			thread.runTaskLater(Main.getInstance(),teleportWaitTicks);
-			unit.getRawPlayer().sendMessage(String.format("§a%s 同意了你的传送请求，即将传送", this.getRawPlayer().getName()));
-			this.getRawPlayer().sendMessage(String.format("§a成功同意 %s 的传送请求！", unit.getRawPlayer().getName()));
+			unit.getRawPlayer().sendMessage(String.format("§a%s 同意了你的传送请求，即将传送", this.getDisplayName()));
+			this.getRawPlayer().sendMessage(String.format("§a成功同意 %s 的传送请求！", unit.getDisplayName()));
 		}
 		else {
-			this.getRawPlayer().sendMessage(String.format("§4%s 尚未向你发送传送请求", unit.getRawPlayer().getName()));
+			this.getRawPlayer().sendMessage(String.format("§4%s 尚未向你发送传送请求", unit.getDisplayName()));
 		}
 	}
 	public void denyAllTeleportRequests() {
 		for (PlayerUnit unit : this.tpRequestsQuene) {
-			unit.getRawPlayer().sendMessage(String.format("§2嗯..你的请求被 %s 拒绝了呢...", this.getRawPlayer().getName()));
-			this.getRawPlayer().sendMessage(String.format("§a成功拒绝 %s 的传送请求！", unit.getRawPlayer().getName()));
+			unit.getRawPlayer().sendMessage(String.format("§2嗯..你的请求被 %s 拒绝了呢...", this.getDisplayName()));
+			this.getRawPlayer().sendMessage(String.format("§a成功拒绝 %s 的传送请求！", unit.getDisplayName()));
 		}
 		if (this.tpRequestsQuene.isEmpty()) {
 			this.getRawPlayer().sendMessage("§4没有人向你发送传送请求哦");
@@ -179,22 +181,22 @@ public class PlayerUnit {
 	public void denyTeleportRequestFrom(PlayerUnit unit) {
 		if (this.tpRequestsQuene.contains(unit)) {
 			this.tpRequestsQuene.remove(unit);
-			unit.getRawPlayer().sendMessage(String.format("§2嗯..你的请求被 %s 拒绝了呢...", this.getRawPlayer().getName()));
-			this.getRawPlayer().sendMessage(String.format("§a成功拒绝 %s 的传送请求！", unit.getRawPlayer().getName()));
+			unit.getRawPlayer().sendMessage(String.format("§2嗯..你的请求被 %s 拒绝了呢...", this.getDisplayName()));
+			this.getRawPlayer().sendMessage(String.format("§a成功拒绝 %s 的传送请求！", unit.getDisplayName()));
 		}
 		else {
-			this.getRawPlayer().sendMessage(String.format("§4%s 尚未向你发送传送请求", unit.getRawPlayer().getName()));
+			this.getRawPlayer().sendMessage(String.format("§4%s 尚未向你发送传送请求", unit.getDisplayName()));
 		}
 	}
 	public void cancelAllTeleportRequests() {
 		for (TeleportThread thread : teleportThreadList) {
 			if (this.equals(thread.getTeleporter())) {
-				this.getRawPlayer().sendMessage(String.format("§a成功取消了 %s 的传送请求！", thread.getTeleportee().getRawPlayer().getName()));
-				thread.getTeleportee().getRawPlayer().sendMessage(String.format("§2%s又取消了传送请求呢...", this.getRawPlayer().getName()));
+				this.getRawPlayer().sendMessage(String.format("§a成功取消了 %s 的传送请求！", thread.getTeleportee().getDisplayName()));
+				thread.getTeleportee().getRawPlayer().sendMessage(String.format("§2%s又取消了传送请求呢...", this.getDisplayName()));
 			}
 			else if (this.equals(thread.getTeleportee())) {
-				this.getRawPlayer().sendMessage(String.format("§a成功取消了 %s 的传送请求！", thread.getTeleporter().getRawPlayer().getName()));
-				thread.getTeleporter().getRawPlayer().sendMessage(String.format("§2%s又取消了传送请求呢...", this.getRawPlayer().getName()));
+				this.getRawPlayer().sendMessage(String.format("§a成功取消了 %s 的传送请求！", thread.getTeleporter().getDisplayName()));
+				thread.getTeleporter().getRawPlayer().sendMessage(String.format("§2%s又取消了传送请求呢...", this.getDisplayName()));
 			}
 			thread.cancel();
 		}
@@ -208,13 +210,13 @@ public class PlayerUnit {
 					(this.equals(thread.getTeleportee()) && unit.equals(thread.getTeleporter()))
 			) {
 				thread.cancel();
-				this.getRawPlayer().sendMessage(String.format("§a成功取消了 %s 的传送请求！", unit.getRawPlayer().getName()));
-				unit.getRawPlayer().sendMessage(String.format("§2%s又取消了传送请求呢...", this.getRawPlayer().getName()));
+				this.getRawPlayer().sendMessage(String.format("§a成功取消了 %s 的传送请求！", unit.getDisplayName()));
+				unit.getRawPlayer().sendMessage(String.format("§2%s又取消了传送请求呢...", this.getDisplayName()));
 				teleportThreadList.remove(thread);
 				return;
 			}
 		}
-		this.getRawPlayer().sendMessage(String.format("§4%s 和您之间没有传送请求哦", unit.getRawPlayer().getName()));
+		this.getRawPlayer().sendMessage(String.format("§4%s 和您之间没有传送请求哦", unit.getDisplayName()));
 	}
 	public void cancelTeleportRequestForTimeOut(PlayerUnit unit) {
 		for (TeleportThread thread : teleportThreadList) {
@@ -223,8 +225,8 @@ public class PlayerUnit {
 					(this.equals(thread.getTeleportee()) && unit.equals(thread.getTeleporter()))
 			) {
 				thread.cancel();
-				this.getRawPlayer().sendMessage(String.format("§a取消与 %s 的传送请求！", unit.getRawPlayer().getName()));
-				unit.getRawPlayer().sendMessage(String.format("§a取消与 %s 的传送请求！", this.getRawPlayer().getName()));
+				this.getRawPlayer().sendMessage(String.format("§a取消与 %s 的传送请求！", unit.getDisplayName()));
+				unit.getRawPlayer().sendMessage(String.format("§a取消与 %s 的传送请求！", this.getDisplayName()));
 				teleportThreadList.remove(thread);
 				return;
 			}
@@ -235,7 +237,7 @@ public class PlayerUnit {
 		this.epithetList.add(epithet);
 	}
 	public void wearEpithet(int id) {
-		if (id < this.epithetList.size()) {
+		if (id < this.epithetList.size() && id >= 0) {
 			this.epithetWornList.add(id);
 			if (this.epithetWornList.size() > Main.getInstance().getConfig().getInt("max_epithets_worn")) {
 				this.epithetList.remove(0);
@@ -245,23 +247,51 @@ public class PlayerUnit {
 		else {
 			this.getRawPlayer().sendMessage(String.format("§4无效的id: '%d'", id+1));
 		}
+		this.updateDisplayName();
 	}
 	public void addWornEpithet(int id) {
-		if (id < this.epithetList.size()) {
+		if (id < this.epithetList.size() && id >= 0) {
 			this.epithetWornList.add(id);
 			if (this.epithetWornList.size() > Main.getInstance().getConfig().getInt("max_epithets_worn")) {
 				this.epithetList.remove(0);
 			}
 		}
+		this.updateDisplayName();
 	}
 	public List<Integer> getEpithetWornList() {
 		return new ArrayList<>(this.epithetWornList);
 	}
 	public void deleteEpithet(int id) {
+		this.epithetWornList.remove(new Integer(id));
+		int i=0;
+		for (Integer epithetId : this.epithetWornList) {
+			if (epithetId > id) {
+				this.epithetWornList.set(i,epithetId-1);	
+			}
+			i++;
+		}
 		this.epithetList.remove(id);
 	}
 	public List<String> getEpithetList() {
 		return new ArrayList<>(this.epithetList);
+	}
+
+	private void updateDisplayName() {
+		StringBuilder builder = new StringBuilder();
+		for (Integer epithetId : this.epithetWornList) {
+			builder.append(String.format("§r§7[%s§r§7]", this.epithetList.get(epithetId)));
+		}
+		if (!this.epithetList.isEmpty()) {
+			builder.append(" ");
+		}
+		builder.append(String.format("§r%s§r", this.getRawPlayer().getName()));
+		this.displayName = builder.toString();
+		this.getRawPlayer().setCustomName(displayName);
+		this.getRawPlayer().setDisplayName(displayName);
+		this.getRawPlayer().setPlayerListName(displayName);
+	}
+	public String getDisplayName() {
+		return this.displayName;
 	}
 }
 

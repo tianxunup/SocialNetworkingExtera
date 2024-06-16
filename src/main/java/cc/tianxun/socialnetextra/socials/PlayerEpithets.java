@@ -104,17 +104,7 @@ public class PlayerEpithets implements CommandExecutor, Listener {
 	}
 	@EventHandler
 	public void onAsyncPlayerChat(AsyncPlayerChatEvent event) {
-		StringBuilder message = new StringBuilder();
-		PlayerUnit unit = PlayerUnit.getPlayerUnit(event.getPlayer());
-		List<String> epithetList = unit.getEpithetList();
-		for (Integer epithetId : unit.getEpithetWornList()) {
-			message.append(String.format("§r§7[%s§r§7]", epithetList.get(epithetId)));
-		}
-		if (!epithetList.isEmpty()) {
-			message.append(" ");
-		}
-		message.append(String.format("§r%s§r§7: §r%s", event.getPlayer().getName(),event.getMessage()));
-		event.setFormat(message.toString());
+		event.setFormat(String.format("%s§r§7: §r%s", PlayerUnit.getPlayerUnit(event.getPlayer()).getDisplayName(),event.getMessage()));
 	}
 }
 
