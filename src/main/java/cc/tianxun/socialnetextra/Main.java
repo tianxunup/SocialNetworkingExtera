@@ -2,6 +2,7 @@ package cc.tianxun.socialnetextra;
 
 import cc.tianxun.socialnetextra.command.*;
 import cc.tianxun.socialnetextra.socials.*;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.*;
 import org.bukkit.event.player.*;
@@ -53,6 +54,9 @@ public final class Main extends JavaPlugin implements Listener {
 		    throw new RuntimeException(e);
 	    }
     }
+    public FileConfiguration getData() {
+        return this.dataFile;
+    }
     @EventHandler
     public void onPlayerLogin(PlayerLoginEvent event) {
         PlayerUnit unit = PlayerUnit.registerPlayerUnit(event.getPlayer());
@@ -62,7 +66,10 @@ public final class Main extends JavaPlugin implements Listener {
         this.dataFile.set(String.format("%s.last_login_stamp",event.getPlayer().getName()),unit.getLastLoginStamp());
         unit.setPasswordHash(this.dataFile.getInt(String.format("%s.password_hash",event.getPlayer().getName())));
         for (String epithet : this.dataFile.getStringList(String.format("%s.epithets",event.getPlayer().getName()))) {
-            unit.addEpithetx(epithet);
+            unit.addEpithet(epithet);
+        }
+        for (Integer epithetId : this.dataFile.getIntegerList(String.format("%s.epithets_worn",event.getPlayer().getName()))) {
+            unit.addWornEpithet(epithetId);
         }
     }
     @EventHandler(priority = EventPriority.LOW)

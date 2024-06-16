@@ -65,15 +65,19 @@ public class PlayerUnit {
 		return unit;
 	}
 	public static void revokedPlayerUnit(Player player) {
-		if (units.remove(player)==null) {
-			Main.getInstance().getLogger().warning(String.format("Player '%s' didn't register.", player.getName()));
+		if (player!=null) {
+			revokedPlayerUnit(getPlayerUnit(player));
 		}
 	}
 	public static void revokedPlayerUnit(PlayerUnit unit) {
-		Player player = unit.getRawPlayer();
-		if (units.remove(player)==null) {
-			Main.getInstance().getLogger().warning(String.format("Player '%s' didn't register.", player.getName()));
+		if (!units.containsValue(unit)) {
+			Main.getInstance().getLogger().warning(String.format("Player '%s' didn't register.", unit.getRawPlayer().getName()));
 		}
+		Main.getInstance().getData().set(String.format("%s.register_stamp", unit.getRawPlayer().getName()),unit.getRegisterStamp());
+		Main.getInstance().getData().set(String.format("%s.password_hash", unit.getRawPlayer().getName()),unit.passwordHash);
+		Main.getInstance().getData().set(String.format("%s.epithets", unit.getRawPlayer().getName()),unit.epithetList);
+		Main.getInstance().getData().set(String.format("%s.epithets_worn", unit.getRawPlayer().getName()),unit.epithetWornList);
+		units.remove(unit.getRawPlayer());
 	}
 
 	private PlayerUnit(Player player) {
@@ -108,7 +112,7 @@ public class PlayerUnit {
 		return (password.hashCode() == this.passwordHash);
 	}
 
-	public void addEpithetx(String epithet) {
+	public void addEpithet(String epithet) {
 		this.epithetList.add(epithet);
 	}
 	
@@ -240,6 +244,14 @@ public class PlayerUnit {
 		}
 		else {
 			this.getRawPlayer().sendMessage(String.format("§4无效的id: '%d'", id+1));
+		}
+	}
+	public void addWornEpithet(int id) {
+		if (id < this.epithetList.size()) {
+			this.epithetWornList.add(id);
+			if (this.epithetWornList.size() > Main.getInstance().getConfig().getInt("max_epithets_worn")) {
+				this.epithetList.remove(0);
+			}
 		}
 	}
 	public void deleteEpithet(int id) {
