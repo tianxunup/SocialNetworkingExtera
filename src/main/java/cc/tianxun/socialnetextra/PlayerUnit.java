@@ -74,10 +74,10 @@ public class PlayerUnit {
 		if (!units.containsValue(unit)) {
 			Main.getInstance().getLogger().warning(String.format("Player '%s' didn't register.", unit.getDisplayName()));
 		}
-		Main.getInstance().getData().set(String.format("%s.register_stamp", unit.getDisplayName()),unit.getRegisterStamp());
-		Main.getInstance().getData().set(String.format("%s.password_hash", unit.getDisplayName()),unit.passwordHash);
-		Main.getInstance().getData().set(String.format("%s.epithets", unit.getDisplayName()),unit.epithetList);
-		Main.getInstance().getData().set(String.format("%s.epithets_worn", unit.getDisplayName()),unit.epithetWornList);
+		Main.getInstance().getData().set(String.format("%s.register_stamp", unit.getRawPlayer().getName()),unit.getRegisterStamp());
+		Main.getInstance().getData().set(String.format("%s.password_hash", unit.getRawPlayer().getName()),unit.passwordHash);
+		Main.getInstance().getData().set(String.format("%s.epithets", unit.getRawPlayer().getName()),unit.epithetList);
+		Main.getInstance().getData().set(String.format("%s.epithets_worn", unit.getRawPlayer().getName()),unit.epithetWornList);
 		units.remove(unit.getRawPlayer());
 	}
 
