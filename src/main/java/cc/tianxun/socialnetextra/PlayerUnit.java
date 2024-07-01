@@ -271,6 +271,7 @@ public class PlayerUnit {
 			i++;
 		}
 		this.epithetList.remove(id);
+		this.updateDisplayName();
 	}
 	public List<String> getEpithetList() {
 		return new ArrayList<>(this.epithetList);

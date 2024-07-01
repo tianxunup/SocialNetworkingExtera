@@ -4,9 +4,11 @@ import cc.tianxun.socialnetextra.command.*;
 import cc.tianxun.socialnetextra.socials.*;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.event.*;
 import org.bukkit.event.player.*;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
 import java.io.IOException;
@@ -76,8 +78,9 @@ public final class Main extends JavaPlugin implements Listener {
             unit.addWornEpithet(epithetId);
         }
     }
-    @EventHandler(priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.HIGH)
     public void onPlayerQuit(PlayerQuitEvent event) {
+        event.setQuitMessage(String.format("%s §r§e退出了游戏", PlayerUnit.getPlayerUnit(event.getPlayer()).getDisplayName()));
         PlayerUnit.revokedPlayerUnit(event.getPlayer());
     }
 }

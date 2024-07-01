@@ -8,6 +8,7 @@ import org.bukkit.event.*;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.List;
 
@@ -37,7 +38,7 @@ public class PlayerEpithets implements CommandExecutor, Listener {
 			}
 			else {
 				try {
-					unit.deleteEpithet(Integer.parseInt(args[1]));
+					unit.deleteEpithet(Integer.parseInt(args[1])-1);
 				}
 				catch (NumberFormatException e) {
 					sender.sendMessage(String.format("无效的参数 '%s'", args[1]));
@@ -81,7 +82,7 @@ public class PlayerEpithets implements CommandExecutor, Listener {
 				sender.sendMessage(String.format("§4命令'%s'需要1个参数，而你传入了%d个",label,args.length));
 			}
 			try {
-				unit.deleteEpithet(Integer.parseInt(args[0]));
+				unit.deleteEpithet(Integer.parseInt(args[0])-1);
 				sender.sendMessage(String.format("§a成功删除自己称号'§r%s§r§a'",args[0]));
 			}
 			catch (NumberFormatException ignored) {
@@ -174,9 +175,4 @@ public class PlayerEpithets implements CommandExecutor, Listener {
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		event.setJoinMessage(String.format("%s §r§e加入了游戏", PlayerUnit.getPlayerUnit(event.getPlayer()).getDisplayName()));
 	}
-	@EventHandler
-	public void onPlayerQuit(PlayerQuitEvent event) {
-		event.setQuitMessage(String.format("%s §r§e退出了游戏", PlayerUnit.getPlayerUnit(event.getPlayer()).getDisplayName()));
-	}
 }
-
